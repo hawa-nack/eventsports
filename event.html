@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>รายละเอียดการแข่งขัน</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #fffdf5;
+      padding: 20px;
+    }
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    }
+    h2, h3 {
+      text-align: center;
+    }
+    .logo {
+      display: block;
+      margin: 0 auto 20px;
+      width: 130px;
+      height: 130px;
+      object-fit: contain;
+    }
+    .location {
+      text-align: center;
+      margin: 10px 0 20px;
+    }
+    .schedule {
+      background-color: #f0f8ff;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+    .btn {
+      margin-top: 30px;
+      display: block;
+      width: fit-content;
+      margin-left: auto;
+      margin-right: auto;
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background-color: #0056b3;
+    }
+    .restaurants {
+      margin-top: 30px;
+    }
+    .restaurant-item {
+      background-color: #fff9ed;
+      border-left: 5px solid #ffa726;
+      margin-bottom: 12px;
+      padding: 12px 16px;
+      border-radius: 10px;
+    }
+    .restaurant-item a {
+      color: #007bff;
+      text-decoration: none;
+    }
+    .restaurant-item a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img id="sportLogo" class="logo" src="" alt="โลโก้กีฬา" />
+    <h2 id="sportName">กำลังโหลด...</h2>
+    <div class="location">
+      <p><strong>📍 สถานที่แข่งขัน:</strong> สนามกีฬาแห่งชาติ</p>
+      <p><strong>🗺️ เส้นทาง:</strong> <a id="mapLink" href="#" target="_blank">เปิดใน Google Maps</a></p>
+    </div>
+
+    <div class="restaurants">
+      <h3>🍴 ร้านอาหารใกล้สนาม (ในรัศมี 1 กม.)</h3>
+      <div id="restaurantList"></div>
+    </div>
+
+    <h3>📅 ตารางการแข่งขัน</h3>
+    <div id="scheduleList"></div>
+
+    <button class="btn" onclick="goBack()">🔙 กลับไปเลือกกีฬา</button>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const sport = params.get("sport");
+    document.getElementById("sportName").textContent = sport || "ไม่พบข้อมูลกีฬา";
+
+    const coordinates = {
+      "ฟุตบอล": "13.7465,100.5372",
+      "บาสเกตบอล": "13.7563,100.5018",
+      "เทนนิส": "13.7292,100.7752",
+      "วอลเลย์บอล": "13.7500,100.5000",
+      "แบดมินตัน": "13.7300,100.5200",
+      "มวย": "13.7400,100.5300",
+      "กรีฑา": "13.7200,100.5400",
+      "ว่ายน้ำ": "13.7100,100.5500"
+    };
+
+    const logos = {
+      "ฟุตบอล": "logos/football.png",
+      "บาสเกตบอล": "logos/basketball.png",
+      "เทนนิส": "logos/tennis.png",
+      "วอลเลย์บอล": "logos/volleyball.png",
+      "แบดมินตัน": "logos/badminton.png",
+      "มวย": "logos/boxing.png",
+      "กรีฑา": "logos/running.png",
+      "ว่ายน้ำ": "logos/swimming.png"
+    };
+
+    const restaurantData = {
+      "ฟุตบอล": [
+        { name: "ร้านก๋วยเตี๋ยวสนามกีฬา", lat: 13.747, lng: 100.538 },
+        { name: "ข้าวแกงคุณยาย", lat: 13.746, lng: 100.536 },
+        { name: "กาแฟสนามหญ้า", lat: 13.745, lng: 100.537 }
+      ]
+    };
+
+    const scheduleData = {
+      "ฟุตบอล": [
+        { date: "12 มี.ค. 2025", time: "14:00", match: "ทีม A vs ทีม B" },
+        { date: "14 มี.ค. 2025", time: "16:00", match: "ทีม C vs ทีม D" }
+      ]
+    };
+
+    const logo = logos[sport];
+    if (logo) {
+      document.getElementById("sportLogo").src = logo;
+      document.getElementById("sportLogo").alt = `โลโก้ของ ${sport}`;
+    } else {
+      document.getElementById("sportLogo").style.display = "none";
+    }
+
+    const coord = coordinates[sport] || "13.7465,100.5372";
+    document.getElementById("mapLink").href = `https://www.google.com/maps?q=${coord}`;
+
+    const scheduleList = document.getElementById("scheduleList");
+    const schedule = scheduleData[sport];
+    if (schedule && schedule.length > 0) {
+      schedule.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "schedule";
+        div.innerHTML = `<strong>${item.date}</strong> เวลา ${item.time} - ${item.match}`;
+        scheduleList.appendChild(div);
+      });
+    } else {
+      scheduleList.innerHTML = "<p>ยังไม่มีข้อมูลการแข่งขัน</p>";
+    }
+
+    const restaurantList = document.getElementById("restaurantList");
+    const restaurants = restaurantData[sport];
+    if (restaurants && restaurants.length > 0) {
+      restaurants.forEach(res => {
+        const div = document.createElement("div");
+        div.className = "restaurant-item";
+        const mapUrl = `https://www.google.com/maps/dir/?api=1&destination=${res.lat},${res.lng}`;
+        div.innerHTML = `<strong>${res.name}</strong><br><a href="${mapUrl}" target="_blank">📍 ดูเส้นทาง</a>`;
+        restaurantList.appendChild(div);
+      });
+    } else {
+      restaurantList.innerHTML = "<p>ยังไม่มีข้อมูลร้านอาหาร</p>";
+    }
+
+    function goBack() {
+      window.location.href = "select.html";
+    }
+  </script>
+</body>
+</html>

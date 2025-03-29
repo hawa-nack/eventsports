@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>เลือกสนามแข่งขัน</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f0f8ff;
+      padding: 20px;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: white;
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-size: 18px;
+    }
+    .card img {
+      width: 90px;
+      height: 90px;
+      object-fit: contain;
+      margin-bottom: 10px;
+    }
+    .card:hover {
+      transform: scale(1.05);
+      background-color: #e7faff;
+    }
+    @media (max-width: 480px) {
+      .card {
+        padding: 16px;
+        font-size: 16px;
+      }
+      .card img {
+        width: 70px;
+        height: 70px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>เลือกสนามแข่งขัน</h2>
+    <div class="grid" id="sportsGrid"></div>
+  </div>
+
+  <script>
+    const sportsList = [
+      { name: "ฟุตบอล", logo: "logos/football.png" },
+      { name: "บาสเกตบอล", logo: "logos/basketball.png" },
+      { name: "เทนนิส", logo: "logos/tennis.png" },
+      { name: "วอลเลย์บอล", logo: "logos/volleyball.png" },
+      { name: "แบดมินตัน", logo: "logos/badminton.png" },
+      { name: "มวย", logo: "logos/boxing.png" },
+      { name: "กรีฑา", logo: "logos/running.png" },
+      { name: "ว่ายน้ำ", logo: "logos/swimming.png" }
+    ];
+
+    const sportsGrid = document.getElementById("sportsGrid");
+
+    sportsList.forEach(sport => {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <img src="${sport.logo}" alt="${sport.name}" />
+        <div>${sport.name}</div>
+      `;
+      card.onclick = () => {
+        window.location.href = `event.html?sport=${encodeURIComponent(sport.name)}`;
+      };
+      sportsGrid.appendChild(card);
+    });
+  </script>
+</body>
+</html>
